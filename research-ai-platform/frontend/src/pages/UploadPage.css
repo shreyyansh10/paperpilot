@@ -1,0 +1,141 @@
+.upload-page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+}
+
+.upload-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+.upload-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.upload-header p {
+  color: var(--color-text-muted);
+  font-size: 1.05rem;
+}
+
+/* ── Drop zone ────────────────────────────────────────────── */
+.drop-zone {
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius);
+  padding: 3rem 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  background: var(--color-surface);
+}
+.drop-zone:hover,
+.drop-zone.active {
+  border-color: var(--color-primary);
+  background: rgba(99, 102, 241, 0.06);
+}
+.drop-zone.has-file {
+  border-color: var(--color-success);
+}
+
+.drop-icon {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 0.75rem;
+}
+.drop-prompt p {
+  color: var(--color-text-muted);
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 1.05rem;
+}
+.file-icon { font-size: 1.5rem; }
+.file-name { font-weight: 600; }
+.file-size { color: var(--color-text-muted); }
+
+/* ── Button ───────────────────────────────────────────────── */
+.upload-btn {
+  display: block;
+  width: 100%;
+  margin-top: 1.5rem;
+  padding: 0.85rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  color: #fff;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+}
+.upload-btn:hover:not(:disabled) {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+.upload-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Error ────────────────────────────────────────────────── */
+.error-msg {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius);
+  color: var(--color-danger);
+  font-size: 0.95rem;
+}
+
+/* ── Result card ──────────────────────────────────────────── */
+.result-card {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: var(--color-surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
+}
+.result-card h2 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: var(--color-success);
+}
+.result-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+.result-meta code {
+  color: var(--color-accent);
+  font-size: 0.85rem;
+}
+.result-preview {
+  margin-top: 1rem;
+}
+.result-preview h3 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  color: var(--color-text-muted);
+}
+.result-preview pre {
+  background: var(--color-bg);
+  padding: 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  max-height: 300px;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--color-text);
+}

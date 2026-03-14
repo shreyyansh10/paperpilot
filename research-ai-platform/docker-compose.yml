@@ -1,0 +1,53 @@
+# Docker Compose — PaperPilot Microservices
+# This is a placeholder; full Dockerfiles and configs will be added later.
+
+version: "3.9"
+
+services:
+  api-gateway:
+    build: ./services/api-gateway
+    ports:
+      - "8000:8000"
+    environment:
+      - PAPER_SERVICE_URL=http://paper-service:8001
+      - AI_SERVICE_URL=http://ai-service:8002
+      - VECTOR_SERVICE_URL=http://vector-service:8003
+      - CITATION_SERVICE_URL=http://citation-service:8004
+    depends_on:
+      - paper-service
+      - ai-service
+      - vector-service
+      - citation-service
+
+  paper-service:
+    build: ./services/paper-service
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./storage/pdfs:/app/storage/pdfs
+
+  ai-service:
+    build: ./services/ai-service
+    ports:
+      - "8002:8002"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+
+  vector-service:
+    build: ./services/vector-service
+    ports:
+      - "8003:8003"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+
+  citation-service:
+    build: ./services/citation-service
+    ports:
+      - "8004:8004"
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api-gateway
