@@ -16,7 +16,7 @@ app = FastAPI(title="PaperPilot API Gateway", version="0.1.0")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -26,6 +26,7 @@ PAPER_SERVICE = os.getenv("PAPER_SERVICE_URL", "http://localhost:8001")
 AI_SERVICE = os.getenv("AI_SERVICE_URL", "http://localhost:8002")
 VECTOR_SERVICE = os.getenv("VECTOR_SERVICE_URL", "http://localhost:8003")
 CITATION_SERVICE = os.getenv("CITATION_SERVICE_URL", "http://localhost:8004")
+AUTH_SERVICE = "http://localhost:8005"
 
 
 # ── Health ────────────────────────────────────────────────────
@@ -40,7 +41,18 @@ async def upload_paper(file: UploadFile = File(...)):
     """Forward PDF upload to Paper Service."""
     async with httpx.AsyncClient(timeout=60.0) as client:
         files = {"file": (file.filename, await file.read(), file.content_type)}
-        response = await client.post(f"{PAPER_SERVICE}/upload-paper", files=files)
+        response = await client.post(f"{PAPER_SERVICE}/upload", files=files)
+        if response.status_code != 200:
+            raise HTTPException(status_code=response.status_code, detail=response.text)
+        return response.json()
+
+
+# ── Get Paper ─────────────────────────────────────────────────
+@app.get("/paper/{paper_id}")
+async def get_paper(paper_id: str):
+    """Forward paper retrieval to Paper Service."""
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        response = await client.get(f"{PAPER_SERVICE}/paper/{paper_id}")
         if response.status_code != 200:
             raise HTTPException(status_code=response.status_code, detail=response.text)
         return response.json()
@@ -91,3 +103,39 @@ async def get_citations(paper_title: str):
         if response.status_code != 200:
             raise HTTPException(status_code=response.status_code, detail=response.text)
         return response.json()
+
+
+@app.post("/auth/register")
+async def auth_register(request: Request):
+    body = await request.json()
+    async with httpx.AsyncClient(timeout=30) as client:
+        response = await client.post(
+            f"{AUTH_SERVICE}/auth/register", json=body
+        )
+        return response.json()
+
+
+@app.post("/auth/login")
+async def auth_login(request: Request):
+    body = await request.json()
+    async with httpx.AsyncClient(timeout=30) as client:
+        response = await client.post(
+            f"{AUTH_SERVICE}/auth/login", json=body
+        )
+        return response.json()
+
+
+@app.get("/auth/me")
+async def auth_me(request: Request):
+    auth_header = request.headers.get("Authorization", "")
+    async with httpx.AsyncClient(timeout=30) as client:
+        response = await client.get(
+            f"{AUTH_SERVICE}/auth/me",
+            headers={"Authorization": auth_header}
+        )
+        return response.json()
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

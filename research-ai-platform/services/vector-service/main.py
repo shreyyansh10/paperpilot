@@ -22,3 +22,8 @@ app.include_router(vector_router)
 @app.get("/health")
 async def health():
     return {"status": "healthy", "service": "vector-service"}
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="0.0.0.0", port=8003, reload=True)

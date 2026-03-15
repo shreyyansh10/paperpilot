@@ -1,5 +1,5 @@
 .upload-page {
-  max-width: 720px;
+  max-width: 900px;
   margin: 0 auto;
   padding: 3rem 1.5rem;
 }
@@ -139,3 +139,99 @@
   word-break: break-word;
   color: var(--color-text);
 }
+
+/* ── Go to Explain button ────────────────────────────────── */
+.go-explain-btn {
+  margin-top: 1.25rem;
+}
+
+/* ═══════════════════════════════════════════════════════════ */
+/* Paper Statistics Section                                    */
+/* ═══════════════════════════════════════════════════════════ */
+.stats-section {
+  margin-top: 2.5rem;
+}
+.stats-heading {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Individual chart card ───────────────────────────────── */
+.stat-chart-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 20px;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.chart-title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  text-align: center;
+  width: 100%;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.chart-svg {
+  width: 100%;
+  max-width: 320px;
+}
+
+/* ── Donut chart specifics ───────────────────────────────── */
+.donut-container {
+  display: flex;
+  justify-content: center;
+}
+.donut-svg {
+  width: 150px;
+  height: 150px;
+}
+.donut-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  justify-content: center;
+  margin-top: 0.75rem;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* ── Gauge label ─────────────────────────────────────────── */
+.gauge-label {
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-top: 0.25rem;
+}
+
