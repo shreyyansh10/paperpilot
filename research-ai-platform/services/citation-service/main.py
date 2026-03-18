@@ -16,12 +16,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(citation_router)
-
 
 @app.get("/health")
 async def health():
     return {"status": "healthy", "service": "citation-service"}
+
+
+app.include_router(citation_router)
 
 
 if __name__ == "__main__":

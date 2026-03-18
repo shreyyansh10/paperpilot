@@ -16,12 +16,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(vector_router)
-
 
 @app.get("/health")
 async def health():
     return {"status": "healthy", "service": "vector-service"}
+
+
+app.include_router(vector_router)
 
 
 if __name__ == "__main__":

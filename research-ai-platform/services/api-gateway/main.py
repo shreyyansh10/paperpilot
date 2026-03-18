@@ -31,7 +31,7 @@ AUTH_SERVICE = "http://localhost:8005"
 
 # ── Health ────────────────────────────────────────────────────
 @app.get("/health")
-async def health():
+def health():
     return {"status": "healthy", "service": "api-gateway"}
 
 
@@ -61,12 +61,12 @@ async def get_paper(paper_id: str):
 # ── Summarize ─────────────────────────────────────────────────
 @app.post("/summarize")
 async def summarize(request: Request):
-    """Forward summarization request to AI Service."""
     body = await request.json()
-    async with httpx.AsyncClient(timeout=120.0) as client:
-        response = await client.post(f"{AI_SERVICE}/summarize", json=body)
-        if response.status_code != 200:
-            raise HTTPException(status_code=response.status_code, detail=response.text)
+    async with httpx.AsyncClient(timeout=60) as client:
+        response = await client.post(
+            f"{AI_SERVICE}/summarize",
+            json=body
+        )
         return response.json()
 
 
