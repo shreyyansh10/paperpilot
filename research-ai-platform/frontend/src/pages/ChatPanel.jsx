@@ -1,11 +1,11 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { usePaper } from '../contexts/PaperContext';
-import { chatWithPaper } from '../api/client';
+import axios from 'axios';
+import PaperContext from '../contexts/PaperContext';
 import './ChatPanel.css';
 
 export default function ChatPanel() {
-  const { paperId, filename } = usePaper();
+  const { paperId, filename } = useContext(PaperContext);
   const navigate = useNavigate();
 
   const [messages, setMessages] = useState([]);
@@ -26,12 +26,18 @@ export default function ChatPanel() {
     setLoading(true);
 
     try {
-      const response = await chatWithPaper(paperId, question);
+      const response = await axios.post('http://localhost:8000/chat', {
+        paper_id: paperId,
+        question,
+      });
       setMessages((prev) => [...prev, { role: 'assistant', text: response.data.answer }]);
     } catch (err) {
       setMessages((prev) => [
         ...prev,
-        { role: 'assistant', text: `Error: ${err.response?.data?.detail || 'Failed to get response.'}` },
+        {
+          role: 'assistant',
+          text: `Error: ${err.response?.data?.detail || err.message || 'Failed to get response.'}`,
+        },
       ]);
     } finally {
       setLoading(false);
@@ -43,11 +49,9 @@ export default function ChatPanel() {
     return (
       <div className="chat-page">
         <div className="no-paper-card">
-          <span className="no-paper-icon">⚠️</span>
-          <h2>No paper uploaded yet</h2>
-          <p>Please go to the Upload page first to upload a research paper.</p>
+          <h2>No paper uploaded yet. Please go to Analyze page first.</h2>
           <button className="chat-go-upload-btn" onClick={() => navigate('/upload')}>
-            📄 Go to Upload
+            Go to Analyze
           </button>
         </div>
       </div>
@@ -57,12 +61,12 @@ export default function ChatPanel() {
   return (
     <div className="chat-page">
       <div className="chat-header">
-        <h1>💬 Chat with Paper</h1>
+        <h1>Chat with Paper</h1>
         <p>Ask questions about your uploaded paper using AI-powered Q&A.</p>
       </div>
 
       <div className="active-paper-bar">
-        <span>📄</span> Chatting about: <strong>{filename}</strong>
+        Chatting about: <strong>{filename}</strong>
       </div>
 
       <div className="chat-window">
@@ -73,13 +77,13 @@ export default function ChatPanel() {
         )}
         {messages.map((msg, i) => (
           <div key={i} className={`chat-bubble ${msg.role}`}>
-            <span className="bubble-role">{msg.role === 'user' ? '🧑' : '🤖'}</span>
+            <span className="bubble-role">{msg.role === 'user' ? 'You' : 'AI'}</span>
             <p>{msg.text}</p>
           </div>
         ))}
         {loading && (
           <div className="chat-bubble assistant typing">
-            <span className="bubble-role">🤖</span>
+            <span className="bubble-role">AI</span>
             <p>Thinking…</p>
           </div>
         )}
@@ -96,7 +100,7 @@ export default function ChatPanel() {
           disabled={loading}
         />
         <button onClick={handleSend} disabled={loading || !input.trim()}>
-          ➤
+          Send
         </button>
       </div>
     </div>

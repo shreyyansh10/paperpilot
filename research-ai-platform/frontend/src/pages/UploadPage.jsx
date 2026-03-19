@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { usePaper } from '../contexts/PaperContext';
 import { uploadPaper } from '../api/client';
 import './UploadPage.css';
@@ -294,6 +295,10 @@ export default function UploadPage() {
   const [uploading, setUploading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
+  const [selectedLevel, setSelectedLevel] = useState('beginner');
+  const [explanation, setExplanation] = useState('');
+  const [explaining, setExplaining] = useState(false);
+  const [explainError, setExplainError] = useState(null);
 
   const { setPaper } = usePaper();
   const navigate = useNavigate();
@@ -338,6 +343,47 @@ export default function UploadPage() {
     } finally {
       setUploading(false);
     }
+  };
+
+  const handleGenerateExplanation = async () => {
+    if (!result?.paper_id) return;
+
+    setExplaining(true);
+    setExplainError(null);
+
+    try {
+      console.log('Generating explanation for level:', selectedLevel);
+      const response = await axios.post(
+        'http://localhost:8000/explain',
+        {
+          paper_id: result.paper_id,
+          level: selectedLevel,
+        }
+      );
+
+      setExplanation(response.data?.explanation || 'No explanation returned.');
+    } catch (err) {
+      setExplainError(err.response?.data?.detail || 'Failed to generate explanation.');
+      setExplanation('');
+    } finally {
+      setExplaining(false);
+    }
+  };
+
+  const levelButtonStyle = (level) => {
+    const isSelected = selectedLevel === level;
+    return {
+      padding: '0.55rem 0.9rem',
+      borderRadius: '10px',
+      border: isSelected ? '1px solid transparent' : '1px solid #475569',
+      background: isSelected
+        ? 'linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%)'
+        : '#0f172a',
+      color: '#e2e8f0',
+      fontWeight: 600,
+      cursor: 'pointer',
+      transition: 'all 0.2s ease',
+    };
   };
 
   return (
@@ -398,6 +444,56 @@ export default function UploadPage() {
             <div className="result-preview">
               <h3>Text Preview</h3>
               <pre>{result.preview}</pre>
+            </div>
+
+            <div style={{ marginTop: '1rem' }}>
+              <h3 style={{ marginBottom: '0.65rem' }}>Explanation Level</h3>
+              <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  style={levelButtonStyle('beginner')}
+                  onClick={() => setSelectedLevel('beginner')}
+                >
+                  Beginner
+                </button>
+                <button
+                  type="button"
+                  style={levelButtonStyle('intermediate')}
+                  onClick={() => setSelectedLevel('intermediate')}
+                >
+                  Intermediate
+                </button>
+                <button
+                  type="button"
+                  style={levelButtonStyle('expert')}
+                  onClick={() => setSelectedLevel('expert')}
+                >
+                  Expert
+                </button>
+              </div>
+
+              <button
+                type="button"
+                className="upload-btn"
+                style={{ marginTop: '0.9rem' }}
+                onClick={handleGenerateExplanation}
+                disabled={explaining}
+              >
+                {explaining ? '⏳ Generating…' : '🧠 Generate Explanation'}
+              </button>
+
+              {explainError && (
+                <div className="error-msg" style={{ marginTop: '0.8rem' }}>
+                  {explainError}
+                </div>
+              )}
+
+              {explanation && (
+                <div className="result-preview" style={{ marginTop: '0.9rem' }}>
+                  <h3>Explanation ({selectedLevel} level)</h3>
+                  <pre>{explanation}</pre>
+                </div>
+              )}
             </div>
 
             <button

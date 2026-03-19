@@ -24,7 +24,7 @@ app.add_middleware(
 # ── Service URLs ──────────────────────────────────────────────
 PAPER_SERVICE = os.getenv("PAPER_SERVICE_URL", "http://localhost:8001")
 AI_SERVICE = os.getenv("AI_SERVICE_URL", "http://localhost:8002")
-VECTOR_SERVICE = os.getenv("VECTOR_SERVICE_URL", "http://localhost:8003")
+VECTOR_SERVICE = "http://localhost:8003"
 CITATION_SERVICE = os.getenv("CITATION_SERVICE_URL", "http://localhost:8004")
 AUTH_SERVICE = "http://localhost:8005"
 
@@ -79,6 +79,28 @@ async def explain(request: Request):
         response = await client.post(f"{AI_SERVICE}/explain", json=body)
         if response.status_code != 200:
             raise HTTPException(status_code=response.status_code, detail=response.text)
+        return response.json()
+
+
+# ── Embed ─────────────────────────────────────────────────────
+@app.post("/embed")
+async def embed(request: Request):
+    body = await request.json()
+    async with httpx.AsyncClient(timeout=60) as client:
+        response = await client.post(
+            f"{VECTOR_SERVICE}/embed", json=body
+        )
+        return response.json()
+
+
+# ── Search ────────────────────────────────────────────────────
+@app.post("/search")
+async def search(request: Request):
+    body = await request.json()
+    async with httpx.AsyncClient(timeout=60) as client:
+        response = await client.post(
+            f"{VECTOR_SERVICE}/search", json=body
+        )
         return response.json()
 
 

@@ -3,5 +3,13 @@
 .venv/
 **/node_modules/
 __pycache__/
+**/__pycache__/
 *.pyc
+**/*.pyc
+*.pyo
 storage/pdfs/*.pdf
+services/storage/pdfs/*.pdf
+*.pdf
+.vscode/settings.json
+services/ai-service/test_gemini.py
+services/ai-service/test_grok.py

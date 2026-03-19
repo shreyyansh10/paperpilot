@@ -5,27 +5,27 @@ echo ================================
 
 echo.
 echo [1/7] Starting API Gateway (port 8000)...
-start "API Gateway" cmd /k "cd /d c:\Users\inspi\OneDrive\Desktop\PAPERPILOT\research-ai-platform\services\api-gateway && uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
+start "API Gateway" cmd /k "cd /d c:\Users\inspi\OneDrive\Desktop\PAPERPILOT\research-ai-platform\services\api-gateway && C:\Users\inspi\OneDrive\Desktop\PAPERPILOT\research-ai-platform\.venv\Scripts\uvicorn.exe main:app --host 0.0.0.0 --port 8000 --reload"
 
 timeout /t 2 /nobreak >nul
 
 echo [2/7] Starting Paper Service (port 8001)...
-start "Paper Service" cmd /k "cd /d c:\Users\inspi\OneDrive\Desktop\PAPERPILOT\research-ai-platform\services\paper-service && uvicorn main:app --host 0.0.0.0 --port 8001 --reload"
+start "Paper Service" cmd /k "cd /d c:\Users\inspi\OneDrive\Desktop\PAPERPILOT\research-ai-platform\services\paper-service && C:\Users\inspi\OneDrive\Desktop\PAPERPILOT\research-ai-platform\.venv\Scripts\uvicorn.exe main:app --host 0.0.0.0 --port 8001 --reload"
 
 timeout /t 2 /nobreak >nul
 
 echo [3/7] Starting AI Service (port 8002)...
-start "AI Service" cmd /k "cd /d c:\Users\inspi\OneDrive\Desktop\PAPERPILOT\research-ai-platform\services\ai-service && uvicorn main:app --host 0.0.0.0 --port 8002 --reload"
+start "AI Service" cmd /k "cd /d c:\Users\inspi\OneDrive\Desktop\PAPERPILOT\research-ai-platform\services\ai-service && C:\Users\inspi\OneDrive\Desktop\PAPERPILOT\research-ai-platform\.venv\Scripts\uvicorn.exe main:app --host 0.0.0.0 --port 8002 --reload"
 
 timeout /t 2 /nobreak >nul
 
 echo [4/7] Starting Vector Service (port 8003)...
-start "Vector Service" cmd /k "cd /d c:\Users\inspi\OneDrive\Desktop\PAPERPILOT\research-ai-platform\services\vector-service && uvicorn main:app --host 0.0.0.0 --port 8003 --reload"
+start "Vector Service" cmd /k "cd /d c:\Users\inspi\OneDrive\Desktop\PAPERPILOT\research-ai-platform\services\vector-service && C:\Users\inspi\OneDrive\Desktop\PAPERPILOT\research-ai-platform\.venv\Scripts\uvicorn.exe main:app --host 0.0.0.0 --port 8003 --reload"
 
 timeout /t 2 /nobreak >nul
 
 echo [5/7] Starting Citation Service (port 8004)...
-start "Citation Service" cmd /k "cd /d c:\Users\inspi\OneDrive\Desktop\PAPERPILOT\research-ai-platform\services\citation-service && uvicorn main:app --host 0.0.0.0 --port 8004 --reload"
+start "Citation Service" cmd /k "cd /d c:\Users\inspi\OneDrive\Desktop\PAPERPILOT\research-ai-platform\services\citation-service && C:\Users\inspi\OneDrive\Desktop\PAPERPILOT\research-ai-platform\.venv\Scripts\uvicorn.exe main:app --host 0.0.0.0 --port 8004 --reload"
 
 timeout /t 2 /nobreak >nul
 

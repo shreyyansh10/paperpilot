@@ -1,0 +1,124 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start API Gateway",
+      "type": "shell",
+      "command": "uvicorn main:app --host 0.0.0.0 --port 8000 --reload",
+      "options": {
+        "cwd": "${workspaceFolder}/services/api-gateway"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "services"
+      },
+      "isBackground": true
+    },
+    {
+      "label": "Start Paper Service",
+      "type": "shell",
+      "command": "uvicorn main:app --host 0.0.0.0 --port 8001 --reload",
+      "options": {
+        "cwd": "${workspaceFolder}/services/paper-service"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "services"
+      },
+      "isBackground": true
+    },
+    {
+      "label": "Start AI Service",
+      "type": "shell",
+      "command": "uvicorn main:app --host 0.0.0.0 --port 8002 --reload",
+      "options": {
+        "cwd": "${workspaceFolder}/services/ai-service"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "services"
+      },
+      "isBackground": true
+    },
+    {
+      "label": "Start Vector Service",
+      "type": "shell",
+      "command": "uvicorn main:app --host 0.0.0.0 --port 8003 --reload",
+      "options": {
+        "cwd": "${workspaceFolder}/services/vector-service"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "services"
+      },
+      "isBackground": true
+    },
+    {
+      "label": "Start Citation Service",
+      "type": "shell",
+      "command": "uvicorn main:app --host 0.0.0.0 --port 8004 --reload",
+      "options": {
+        "cwd": "${workspaceFolder}/services/citation-service"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "services"
+      },
+      "isBackground": true
+    },
+    {
+      "label": "Start Auth Service",
+      "type": "shell",
+      "command": "npm run dev",
+      "options": {
+        "cwd": "${workspaceFolder}/services/auth-service"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "services"
+      },
+      "isBackground": true
+    },
+    {
+      "label": "Start Frontend",
+      "type": "shell",
+      "command": "npm run dev",
+      "options": {
+        "cwd": "${workspaceFolder}/frontend"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "services"
+      },
+      "isBackground": true
+    },
+    {
+      "label": "Start All PaperPilot Services",
+      "dependsOn": [
+        "Start API Gateway",
+        "Start Paper Service",
+        "Start AI Service",
+        "Start Vector Service",
+        "Start Citation Service",
+        "Start Auth Service",
+        "Start Frontend"
+      ],
+      "dependsOrder": "sequence",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    }
+  ]
+}
