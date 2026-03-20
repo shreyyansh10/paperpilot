@@ -4,12 +4,12 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('paperpilot_token'));
+  const [token, setToken] = useState(sessionStorage.getItem('paperpilot_token'));
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const restoreSession = async () => {
-      const savedToken = localStorage.getItem('paperpilot_token');
+      const savedToken = sessionStorage.getItem('paperpilot_token');
       if (savedToken) {
         try {
           const res = await fetch('http://localhost:8000/auth/me', {
@@ -20,11 +20,11 @@ export const AuthProvider = ({ children }) => {
             setUser(data.user);
             setToken(savedToken);
           } else {
-            localStorage.removeItem('paperpilot_token');
+            sessionStorage.removeItem('paperpilot_token');
             setToken(null);
           }
         } catch {
-          localStorage.removeItem('paperpilot_token');
+          sessionStorage.removeItem('paperpilot_token');
           setToken(null);
         }
       }
@@ -36,13 +36,13 @@ export const AuthProvider = ({ children }) => {
   const login = (userData, jwtToken) => {
     setUser(userData);
     setToken(jwtToken);
-    localStorage.setItem('paperpilot_token', jwtToken);
+    sessionStorage.setItem('paperpilot_token', jwtToken);
   };
 
   const logout = () => {
     setUser(null);
     setToken(null);
-    localStorage.removeItem('paperpilot_token');
+    sessionStorage.removeItem('paperpilot_token');
   };
 
   return (

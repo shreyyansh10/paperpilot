@@ -22,9 +22,10 @@ const NAV_ITEMS = [
   { path: '/citations', label: 'Citations' },
 ];
 
-function RootRedirect() {
-  const { isAuthenticated } = useAuth();
-  return isAuthenticated ? <Navigate to="/dashboard" replace /> : <LandingPage />;
+function AuthRedirect({ children }) {
+  const { isAuthenticated, loading } = useAuth();
+  if (loading) return null;
+  return isAuthenticated ? <Navigate to="/dashboard" replace /> : children;
 }
 
 function AppLayout() {
@@ -56,9 +57,9 @@ function App() {
         <PaperProvider>
           <Router>
             <Routes>
-              <Route path="/" element={<RootRedirect />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/signup" element={<SignupPage />} />
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/login" element={<AuthRedirect><LoginPage /></AuthRedirect>} />
+              <Route path="/signup" element={<AuthRedirect><SignupPage /></AuthRedirect>} />
               <Route path="/*" element={<AppLayout />} />
             </Routes>
           </Router>
