@@ -25,7 +25,7 @@ app.add_middleware(
 PAPER_SERVICE = os.getenv("PAPER_SERVICE_URL", "http://localhost:8001")
 AI_SERVICE = os.getenv("AI_SERVICE_URL", "http://localhost:8002")
 VECTOR_SERVICE = "http://localhost:8003"
-CITATION_SERVICE = os.getenv("CITATION_SERVICE_URL", "http://localhost:8004")
+CITATION_SERVICE = "http://localhost:8004"
 AUTH_SERVICE = "http://localhost:8005"
 
 
@@ -117,6 +117,26 @@ async def chat(request: Request):
 
 
 # ── Citations ─────────────────────────────────────────────────
+@app.post("/citations/search")
+async def citations_search(request: Request):
+    body = await request.json()
+    async with httpx.AsyncClient(timeout=30) as client:
+        response = await client.post(
+            f"{CITATION_SERVICE}/search",
+            json=body
+        )
+        return response.json()
+
+
+@app.get("/citations/paper/{paper_id}")
+async def citations_paper(paper_id: str):
+    async with httpx.AsyncClient(timeout=30) as client:
+        response = await client.get(
+            f"{CITATION_SERVICE}/paper/{paper_id}"
+        )
+        return response.json()
+
+
 @app.get("/citations/{paper_title}")
 async def get_citations(paper_title: str):
     """Forward citation request to Citation Service."""

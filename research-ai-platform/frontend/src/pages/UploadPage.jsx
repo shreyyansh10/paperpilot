@@ -3,24 +3,20 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { usePaper } from '../contexts/PaperContext';
 import { uploadPaper } from '../api/client';
+import PageLoader from '../components/PageLoader';
 import './UploadPage.css';
 
-// ── Stopwords for top-words chart ──────────────────────────────
 const STOPWORDS = new Set([
   'the','a','an','and','or','in','of','to','is','are','was','for',
   'with','this','that','it','be','as','at','by','from','on','has','have',
 ]);
 
-// ── Colors ─────────────────────────────────────────────────────
 const DONUT_COLORS = [
-  '#6366f1','#8b5cf6','#06b6d4','#10b981',
-  '#f59e0b','#ef4444','#ec4899','#14b8a6',
+  '#10b981','#059669','#34d399','#6ee7b7',
+  '#a7f3d0','#047857','#065f46','#064e3b',
 ];
-const WORD_BAR_COLORS = ['#6366f1','#8b5cf6','#06b6d4','#10b981','#f59e0b'];
+const WORD_BAR_COLORS = ['#10b981','#059669','#34d399','#6ee7b7','#047857'];
 
-// ═══════════════════════════════════════════════════════════════
-// Chart 1 — Word Distribution Bar Chart
-// ═══════════════════════════════════════════════════════════════
 function WordDistributionChart({ totalWords, totalChunks }) {
   const [animate, setAnimate] = useState(false);
   useEffect(() => { requestAnimationFrame(() => setAnimate(true)); }, []);
@@ -39,8 +35,8 @@ function WordDistributionChart({ totalWords, totalChunks }) {
       <svg viewBox="0 0 320 130" className="chart-svg">
         <defs>
           <linearGradient id="barGrad" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="#6366f1" />
-            <stop offset="100%" stopColor="#8b5cf6" />
+            <stop offset="0%" stopColor="#10b981" />
+            <stop offset="100%" stopColor="#34d399" />
           </linearGradient>
         </defs>
         {bars.map((bar, i) => {
@@ -48,16 +44,16 @@ function WordDistributionChart({ totalWords, totalChunks }) {
           const barWidth = maxVal > 0 ? (bar.value / maxVal) * 200 : 0;
           return (
             <g key={i}>
-              <text x="0" y={y + 12} fill="var(--color-text-muted)" fontSize="11">{bar.label}</text>
+              <text x="0" y={y + 12} fill="var(--text-muted)" fontSize="11">{bar.label}</text>
               <rect
                 x="105" y={y}
                 width={animate ? barWidth : 0} height="20"
                 rx="4" fill="url(#barGrad)"
-                style={{ transition: 'width 0.8s ease' }}
+                style={{ transition: `width 0.8s ease ${i * 0.1}s` }}
               />
               <text
                 x={animate ? 110 + barWidth : 110} y={y + 14}
-                fill="var(--color-text)" fontSize="11" fontWeight="600"
+                fill="var(--text-primary)" fontSize="11" fontWeight="600"
                 style={{ transition: 'x 0.8s ease' }}
               >
                 {bar.value.toLocaleString()}
@@ -70,9 +66,6 @@ function WordDistributionChart({ totalWords, totalChunks }) {
   );
 }
 
-// ═══════════════════════════════════════════════════════════════
-// Chart 2 — Chunk Coverage Donut Chart
-// ═══════════════════════════════════════════════════════════════
 function ChunkDonutChart({ totalChunks }) {
   const [animate, setAnimate] = useState(false);
   useEffect(() => { requestAnimationFrame(() => setAnimate(true)); }, []);
@@ -111,17 +104,17 @@ function ChunkDonutChart({ totalChunks }) {
           {hasRemaining && (
             <circle
               cx="80" cy="80" r={radius}
-              fill="none" stroke="#475569" strokeWidth="14"
+              fill="none" stroke="var(--text-muted)" strokeWidth="14"
               strokeDasharray={`${animate ? segmentSize - gap : 0} ${circumference - (animate ? segmentSize - gap : 0)}`}
               strokeDashoffset={circumference - (displayChunks * segmentSize)}
               strokeLinecap="round"
               style={{ transition: 'stroke-dasharray 1s ease' }}
             />
           )}
-          <text x="80" y="75" textAnchor="middle" fill="var(--color-text)" fontSize="22" fontWeight="700">
+          <text x="80" y="75" textAnchor="middle" fill="var(--text-primary)" fontSize="26" fontWeight="700">
             {totalChunks}
           </text>
-          <text x="80" y="95" textAnchor="middle" fill="var(--color-text-muted)" fontSize="11">
+          <text x="80" y="95" textAnchor="middle" fill="var(--text-muted)" fontSize="13">
             chunks
           </text>
         </svg>
@@ -135,7 +128,7 @@ function ChunkDonutChart({ totalChunks }) {
         ))}
         {hasRemaining && (
           <span className="legend-item">
-            <span className="legend-dot" style={{ background: '#475569' }} />
+            <span className="legend-dot" style={{ background: 'var(--text-muted)' }} />
             +{totalChunks - 8} more
           </span>
         )}
@@ -144,9 +137,6 @@ function ChunkDonutChart({ totalChunks }) {
   );
 }
 
-// ═══════════════════════════════════════════════════════════════
-// Chart 3 — Text Density Gauge
-// ═══════════════════════════════════════════════════════════════
 function TextDensityGauge({ totalWords }) {
   const [animate, setAnimate] = useState(false);
   useEffect(() => { requestAnimationFrame(() => setAnimate(true)); }, []);
@@ -155,12 +145,10 @@ function TextDensityGauge({ totalWords }) {
   const color = score > 60 ? '#10b981' : score >= 30 ? '#f59e0b' : '#ef4444';
   const label = score > 60 ? 'Rich academic content' : score >= 30 ? 'Moderate content density' : 'Light content document';
 
-  // Semicircle arc math
   const radius = 60;
   const semiCircumference = Math.PI * radius;
   const fillLength = (score / 100) * semiCircumference;
 
-  // Needle angle: 180° = left, 0° = right, score maps linearly
   const needleAngle = 180 - (score / 100) * 180;
   const needleRad = (needleAngle * Math.PI) / 180;
   const needleLen = 45;
@@ -172,43 +160,33 @@ function TextDensityGauge({ totalWords }) {
     <div className="stat-chart-card">
       <h3 className="chart-title">Text Density</h3>
       <svg viewBox="0 0 180 120" className="chart-svg">
-        {/* Background arc */}
-        <path
-          d="M 20,80 A 60,60 0 0,1 160,80"
-          fill="none" stroke="#334155" strokeWidth="14" strokeLinecap="round"
+        <path d="M 20,80 A 60,60 0 0,1 160,80"
+          fill="none" stroke="var(--border-color)" strokeWidth="14" strokeLinecap="round"
         />
-        {/* Filled arc */}
-        <path
-          d="M 20,80 A 60,60 0 0,1 160,80"
+        <path d="M 20,80 A 60,60 0 0,1 160,80"
           fill="none" stroke={color} strokeWidth="14" strokeLinecap="round"
           strokeDasharray={`${semiCircumference}`}
           strokeDashoffset={animate ? semiCircumference - fillLength : semiCircumference}
-          style={{ transition: 'stroke-dashoffset 1s ease' }}
+          style={{ transition: 'stroke-dashoffset 1.2s ease' }}
         />
-        {/* Needle */}
         <line
           x1={cx} y1={cy}
           x2={animate ? nx : cx - needleLen} y2={animate ? ny : cy}
-          stroke="var(--color-text)" strokeWidth="2" strokeLinecap="round"
-          style={{ transition: 'x2 1s ease, y2 1s ease' }}
+          stroke="var(--text-primary)" strokeWidth="2" strokeLinecap="round"
+          style={{ transition: 'x2 1.2s ease, y2 1.2s ease' }}
         />
-        <circle cx={cx} cy={cy} r="4" fill="var(--color-text)" />
-        {/* Score text */}
-        <text x={cx} y={cy + 20} textAnchor="middle" fill={color} fontSize="18" fontWeight="700">
+        <circle cx={cx} cy={cy} r="4" fill="var(--text-primary)" />
+        <text x={cx} y={cy + 20} textAnchor="middle" fill={color} fontSize="24" fontWeight="700">
           {score}%
         </text>
-        {/* Labels */}
-        <text x="15" y="100" fill="var(--color-text-muted)" fontSize="9">Sparse</text>
-        <text x="145" y="100" fill="var(--color-text-muted)" fontSize="9">Dense</text>
+        <text x="15" y="100" fill="var(--text-muted)" fontSize="10">Sparse</text>
+        <text x="145" y="100" fill="var(--text-muted)" fontSize="10">Dense</text>
       </svg>
       <p className="gauge-label" style={{ color }}>{label}</p>
     </div>
   );
 }
 
-// ═══════════════════════════════════════════════════════════════
-// Chart 4 — Top Words in Preview
-// ═══════════════════════════════════════════════════════════════
 function TopWordsChart({ preview }) {
   const [animate, setAnimate] = useState(false);
   useEffect(() => { requestAnimationFrame(() => setAnimate(true)); }, []);
@@ -221,10 +199,7 @@ function TopWordsChart({ preview }) {
   const freq = {};
   words.forEach(w => { freq[w] = (freq[w] || 0) + 1; });
 
-  const sorted = Object.entries(freq)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 5);
-
+  const sorted = Object.entries(freq).sort((a, b) => b[1] - a[1]).slice(0, 5);
   const maxFreq = sorted.length > 0 ? sorted[0][1] : 1;
   const barMaxH = 90;
   const barW = 36;
@@ -235,7 +210,7 @@ function TopWordsChart({ preview }) {
     <div className="stat-chart-card">
       <h3 className="chart-title">Top Words in Preview</h3>
       {sorted.length === 0 ? (
-        <p style={{ color: 'var(--color-text-muted)', textAlign: 'center', padding: '2rem 0' }}>
+        <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '2rem 0' }}>
           Not enough data in preview
         </p>
       ) : (
@@ -254,25 +229,22 @@ function TopWordsChart({ preview }) {
             const y = 100 - barH;
             return (
               <g key={i}>
-                {/* Frequency label */}
                 <text
                   x={x + barW / 2} y={animate ? y - 5 : 100}
-                  textAnchor="middle" fill="var(--color-text)" fontSize="11" fontWeight="600"
-                  style={{ transition: 'y 0.8s ease' }}
+                  textAnchor="middle" fill="var(--text-primary)" fontSize="13" fontWeight="600"
+                  style={{ transition: `y 0.8s ease ${i * 0.15}s` }}
                 >
                   {count}
                 </text>
-                {/* Bar */}
                 <rect
                   x={x} y={animate ? y : 100}
                   width={barW} height={animate ? barH : 0}
                   rx="4" fill={`url(#wordGrad${i})`}
-                  style={{ transition: 'y 0.8s ease, height 0.8s ease' }}
+                  style={{ transition: `y 0.8s ease ${i * 0.15}s, height 0.8s ease ${i * 0.15}s` }}
                 />
-                {/* Word label */}
                 <text
                   x={x + barW / 2} y="120"
-                  textAnchor="middle" fill="var(--color-text-muted)" fontSize="9"
+                  textAnchor="middle" fill="var(--text-muted)" fontSize="10"
                   transform={`rotate(30, ${x + barW / 2}, 120)`}
                 >
                   {word.length > 8 ? word.slice(0, 7) + '…' : word}
@@ -286,9 +258,6 @@ function TopWordsChart({ preview }) {
   );
 }
 
-// ═══════════════════════════════════════════════════════════════
-// Main Upload Page
-// ═══════════════════════════════════════════════════════════════
 export default function UploadPage() {
   const [dragActive, setDragActive] = useState(false);
   const [file, setFile] = useState(null);
@@ -299,6 +268,9 @@ export default function UploadPage() {
   const [explanation, setExplanation] = useState('');
   const [explaining, setExplaining] = useState(false);
   const [explainError, setExplainError] = useState(null);
+  const [summary, setSummary] = useState('');
+  const [summarizing, setSummarizing] = useState(false);
+  const [summaryError, setSummaryError] = useState(null);
 
   const { setPaper } = usePaper();
   const navigate = useNavigate();
@@ -313,9 +285,7 @@ export default function UploadPage() {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    if (e.dataTransfer.files?.[0]) {
-      setFile(e.dataTransfer.files[0]);
-    }
+    if (e.dataTransfer.files?.[0]) setFile(e.dataTransfer.files[0]);
   }, []);
 
   const handleFileChange = (e) => {
@@ -330,14 +300,12 @@ export default function UploadPage() {
       const response = await uploadPaper(file);
       const data = response.data;
       setResult(data);
-
-      // Save to global context
-      setPaper({
-        paperId: data.paper_id,
-        filename: data.filename,
-        totalWords: data.total_words,
-        totalChunks: data.total_chunks,
-      });
+      setPaper({ paperId: data.paper_id, filename: data.filename, totalWords: data.total_words, totalChunks: data.total_chunks });
+      const pCount = parseInt(localStorage.getItem('paperpilot_papers_count') || '0');
+      localStorage.setItem('paperpilot_papers_count', String(pCount + 1));
+      const recent = JSON.parse(localStorage.getItem('paperpilot_recent_papers') || '[]');
+      recent.unshift({ paper_id: data.paper_id, filename: data.filename, total_words: data.total_words, total_chunks: data.total_chunks, uploaded_at: new Date().toISOString() });
+      localStorage.setItem('paperpilot_recent_papers', JSON.stringify(recent.slice(0, 3)));
     } catch (err) {
       setError(err.response?.data?.detail || 'Upload failed. Is the Paper Service running?');
     } finally {
@@ -345,23 +313,32 @@ export default function UploadPage() {
     }
   };
 
+  const handleGenerateSummary = async () => {
+    if (!result?.paper_id) return;
+    setSummarizing(true);
+    setSummaryError(null);
+    try {
+      const response = await axios.post('http://localhost:8000/summarize', { paper_id: result.paper_id });
+      setSummary(response.data?.summary || 'No summary returned.');
+      const sCount = parseInt(localStorage.getItem('paperpilot_summaries_count') || '0');
+      localStorage.setItem('paperpilot_summaries_count', String(sCount + 1));
+    } catch (err) {
+      setSummaryError(err.response?.data?.detail || 'Failed to generate summary.');
+      setSummary('');
+    } finally {
+      setSummarizing(false);
+    }
+  };
+
   const handleGenerateExplanation = async () => {
     if (!result?.paper_id) return;
-
     setExplaining(true);
     setExplainError(null);
-
     try {
-      console.log('Generating explanation for level:', selectedLevel);
-      const response = await axios.post(
-        'http://localhost:8000/explain',
-        {
-          paper_id: result.paper_id,
-          level: selectedLevel,
-        }
-      );
-
+      const response = await axios.post('http://localhost:8000/explain', { paper_id: result.paper_id, level: selectedLevel });
       setExplanation(response.data?.explanation || 'No explanation returned.');
+      const eCount = parseInt(localStorage.getItem('paperpilot_explanations_count') || '0');
+      localStorage.setItem('paperpilot_explanations_count', String(eCount + 1));
     } catch (err) {
       setExplainError(err.response?.data?.detail || 'Failed to generate explanation.');
       setExplanation('');
@@ -370,29 +347,26 @@ export default function UploadPage() {
     }
   };
 
-  const levelButtonStyle = (level) => {
-    const isSelected = selectedLevel === level;
-    return {
-      padding: '0.55rem 0.9rem',
-      borderRadius: '10px',
-      border: isSelected ? '1px solid transparent' : '1px solid #475569',
-      background: isSelected
-        ? 'linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%)'
-        : '#0f172a',
-      color: '#e2e8f0',
-      fontWeight: 600,
-      cursor: 'pointer',
-      transition: 'all 0.2s ease',
-    };
-  };
+  const levelPillStyle = (level) => ({
+    padding: '6px 16px',
+    borderRadius: '20px',
+    border: selectedLevel === level ? 'none' : '1px solid var(--border-color)',
+    background: selectedLevel === level ? 'var(--accent)' : 'transparent',
+    color: selectedLevel === level ? '#fff' : 'var(--text-primary)',
+    fontWeight: 600,
+    cursor: 'pointer',
+    fontSize: '13px',
+    transition: 'all 0.2s ease',
+  });
 
   return (
     <div className="upload-page">
       <div className="upload-header">
-        <h1>📄 Upload Research Paper</h1>
+        <h1>Analyze Research Paper</h1>
         <p>Drop a PDF to extract text, generate summaries, and explore citations.</p>
       </div>
 
+      {/* Drop zone */}
       <div
         className={`drop-zone ${dragActive ? 'active' : ''} ${file ? 'has-file' : ''}`}
         onDragEnter={handleDrag}
@@ -401,121 +375,93 @@ export default function UploadPage() {
         onDrop={handleDrop}
         onClick={() => document.getElementById('file-input').click()}
       >
-        <input
-          id="file-input"
-          type="file"
-          accept=".pdf"
-          onChange={handleFileChange}
-          hidden
-        />
+        <input id="file-input" type="file" accept=".pdf" onChange={handleFileChange} hidden />
         {file ? (
           <div className="file-info">
-            <span className="file-icon">📎</span>
             <span className="file-name">{file.name}</span>
             <span className="file-size">({(file.size / 1024 / 1024).toFixed(2)} MB)</span>
           </div>
         ) : (
           <div className="drop-prompt">
-            <span className="drop-icon">☁️</span>
-            <p>Drag & drop your PDF here, or click to browse</p>
+            <p>Drop your PDF here</p>
+            <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>or click to browse</p>
+            <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '8px' }}>Supports PDF files up to 50MB</p>
           </div>
         )}
       </div>
 
-      <button
-        className="upload-btn"
-        onClick={handleUpload}
-        disabled={!file || uploading}
-      >
-        {uploading ? '⏳ Processing…' : '🚀 Upload & Extract'}
+      <button className="upload-btn" onClick={handleUpload} disabled={!file || uploading}>
+        {uploading ? 'Processing...' : 'Upload & Extract'}
       </button>
 
       {error && <div className="error-msg">{error}</div>}
 
       {result && (
         <>
+          {/* Extraction result */}
           <div className="result-card">
-            <h2>✅ Extraction Complete</h2>
+            <h2>Extraction Complete</h2>
             <div className="result-meta">
               <span>Paper ID: <code>{result.paper_id}</code></span>
-              <span>Total Words: {result.total_words?.toLocaleString()}</span>
-              <span>Total Chunks: {result.total_chunks}</span>
+              <span>Words: {result.total_words?.toLocaleString()}</span>
+              <span>Chunks: {result.total_chunks}</span>
             </div>
-            <div className="result-preview">
-              <h3>Text Preview</h3>
-              <pre>{result.preview}</pre>
+            <div className="result-preview" style={{ maxHeight: '200px', overflowY: 'auto' }}>
+              <h3 style={{ position: 'sticky', top: 0, background: 'var(--bg-card)', paddingBottom: '8px' }}>Text Preview</h3>
+              <pre style={{ maxHeight: 'none', margin: 0 }}>{result.preview}</pre>
             </div>
-
-            <div style={{ marginTop: '1rem' }}>
-              <h3 style={{ marginBottom: '0.65rem' }}>Explanation Level</h3>
-              <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
-                <button
-                  type="button"
-                  style={levelButtonStyle('beginner')}
-                  onClick={() => setSelectedLevel('beginner')}
-                >
-                  Beginner
-                </button>
-                <button
-                  type="button"
-                  style={levelButtonStyle('intermediate')}
-                  onClick={() => setSelectedLevel('intermediate')}
-                >
-                  Intermediate
-                </button>
-                <button
-                  type="button"
-                  style={levelButtonStyle('expert')}
-                  onClick={() => setSelectedLevel('expert')}
-                >
-                  Expert
-                </button>
-              </div>
-
-              <button
-                type="button"
-                className="upload-btn"
-                style={{ marginTop: '0.9rem' }}
-                onClick={handleGenerateExplanation}
-                disabled={explaining}
-              >
-                {explaining ? '⏳ Generating…' : '🧠 Generate Explanation'}
-              </button>
-
-              {explainError && (
-                <div className="error-msg" style={{ marginTop: '0.8rem' }}>
-                  {explainError}
-                </div>
-              )}
-
-              {explanation && (
-                <div className="result-preview" style={{ marginTop: '0.9rem' }}>
-                  <h3>Explanation ({selectedLevel} level)</h3>
-                  <pre>{explanation}</pre>
-                </div>
-              )}
-            </div>
-
-            <button
-              className="upload-btn go-explain-btn"
-              onClick={() => navigate('/explain')}
-            >
-              ✨ Go to Explain →
-            </button>
           </div>
 
-          {/* ── Paper Statistics Charts ──────────────────────── */}
-          <div className="stats-section">
-            <h2 className="stats-heading">📊 Paper Statistics</h2>
+          {/* Paper Statistics */}
+          <div className="upload-section-card">
+            <h2 className="section-title">Paper Statistics</h2>
             <div className="stats-grid">
-              <WordDistributionChart
-                totalWords={result.total_words}
-                totalChunks={result.total_chunks}
-              />
+              <WordDistributionChart totalWords={result.total_words} totalChunks={result.total_chunks} />
               <ChunkDonutChart totalChunks={result.total_chunks} />
               <TextDensityGauge totalWords={result.total_words} />
               <TopWordsChart preview={result.preview} />
             </div>
+          </div>
+
+          {/* AI Summary */}
+          <div className="upload-section-card">
+            <h2 className="section-title">AI Summary</h2>
+            <button className="upload-btn" onClick={handleGenerateSummary} disabled={summarizing} style={{ marginTop: 0 }}>
+              {summarizing ? 'Generating...' : 'Generate Summary'}
+            </button>
+            {summarizing && <PageLoader text="Generating summary..." />}
+            {summaryError && <div className="error-msg">{summaryError}</div>}
+            {summary && (
+              <div className="result-preview" style={{ marginTop: '16px' }}>
+                <pre style={{ fontSize: '14px', lineHeight: '1.6' }}>{summary}</pre>
+              </div>
+            )}
+          </div>
+
+          {/* Multi-Level Explanation */}
+          <div className="upload-section-card">
+            <h2 className="section-title">Multi-Level Explanation</h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: '13px', marginBottom: '12px' }}>
+              Select a difficulty level to generate an explanation tailored to that audience.
+            </p>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '16px' }}>
+              {['beginner', 'intermediate', 'expert'].map((level) => (
+                <button key={level} type="button" style={levelPillStyle(level)} onClick={() => setSelectedLevel(level)}>
+                  {level.charAt(0).toUpperCase() + level.slice(1)}
+                </button>
+              ))}
+            </div>
+            <button className="upload-btn" onClick={handleGenerateExplanation} disabled={explaining} style={{ marginTop: 0 }}>
+              {explaining ? 'Generating...' : 'Generate Explanation'}
+            </button>
+            {explaining && <PageLoader text="Generating explanation..." />}
+            {explainError && <div className="error-msg">{explainError}</div>}
+            {explanation && (
+              <div className="result-preview" style={{ marginTop: '16px' }}>
+                <h3 style={{ marginBottom: '8px', color: 'var(--accent)' }}>Explanation ({selectedLevel} level)</h3>
+                <pre style={{ fontSize: '14px', lineHeight: '1.6' }}>{explanation}</pre>
+              </div>
+            )}
           </div>
         </>
       )}

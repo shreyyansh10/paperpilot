@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import PaperContext from '../contexts/PaperContext';
+import PageLoader from '../components/PageLoader';
 import './ChatPanel.css';
 
 export default function ChatPanel() {
@@ -26,25 +27,20 @@ export default function ChatPanel() {
     setLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:8000/chat', {
-        paper_id: paperId,
-        question,
-      });
+      const response = await axios.post('http://localhost:8000/chat', { paper_id: paperId, question });
       setMessages((prev) => [...prev, { role: 'assistant', text: response.data.answer }]);
+      const cCount = parseInt(localStorage.getItem('paperpilot_chats_count') || '0');
+      localStorage.setItem('paperpilot_chats_count', String(cCount + 1));
     } catch (err) {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: 'assistant',
-          text: `Error: ${err.response?.data?.detail || err.message || 'Failed to get response.'}`,
-        },
-      ]);
+      setMessages((prev) => [...prev, {
+        role: 'assistant',
+        text: `Error: ${err.response?.data?.detail || err.message || 'Failed to get response.'}`,
+      }]);
     } finally {
       setLoading(false);
     }
   };
 
-  // No paper uploaded — show warning
   if (!paperId) {
     return (
       <div className="chat-page">
@@ -81,19 +77,14 @@ export default function ChatPanel() {
             <p>{msg.text}</p>
           </div>
         ))}
-        {loading && (
-          <div className="chat-bubble assistant typing">
-            <span className="bubble-role">AI</span>
-            <p>Thinking…</p>
-          </div>
-        )}
+        {loading && <PageLoader text="AI is thinking..." />}
         <div ref={endRef} />
       </div>
 
       <div className="chat-input-bar">
         <input
           type="text"
-          placeholder="Type your question…"
+          placeholder="Type your question..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSend()}

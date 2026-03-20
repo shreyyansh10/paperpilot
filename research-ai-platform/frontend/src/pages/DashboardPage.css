@@ -1,64 +1,163 @@
-.dashboard-page {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 3rem 1.5rem;
-}
-.dashboard-header {
-  margin-bottom: 2.5rem;
-}
-.dashboard-header h1 {
-  font-size: 2rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-.dashboard-header p {
-  color: var(--color-text-muted);
-  margin-top: 0.4rem;
+/* ═══════════════════════════════════════════════════════════ */
+/* Dashboard Page Styles                                       */
+/* ═══════════════════════════════════════════════════════════ */
+.dash-page {
+  width: 100%;
+  max-width: 100%;
+  padding: 24px 28px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.25rem;
-  margin-bottom: 2.5rem;
+/* ── Welcome ─────────────────────────────────────────────── */
+.dash-welcome h1 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 4px 0;
 }
-.stat-card {
+.dash-welcome p {
+  color: var(--text-muted);
+  font-size: 13px;
+  margin: 0;
+}
+
+/* ── Stats grid ──────────────────────────────────────────── */
+.dash-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+@media (max-width: 900px) {
+  .dash-stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 500px) {
+  .dash-stats-grid { grid-template-columns: 1fr; }
+}
+
+.dash-stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.dash-stat-card:hover {
+  border-color: var(--accent-border);
+  box-shadow: var(--shadow);
+}
+.dash-stat-number {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1;
+}
+.dash-stat-label {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* ── Section ─────────────────────────────────────────────── */
+.dash-section h2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 4px 0;
+}
+.dash-section-sub {
+  color: var(--text-muted);
+  font-size: 13px;
+  margin: 0 0 14px 0;
+}
+
+/* ── Empty state ─────────────────────────────────────────── */
+.dash-empty {
+  text-align: center;
+  padding: 32px 24px;
+  background: var(--bg-card);
+  border: 1px dashed var(--border-color);
+  border-radius: 10px;
+}
+.dash-empty p {
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+/* ── Accent button ───────────────────────────────────────── */
+.dash-accent-btn {
+  display: inline-block;
+  padding: 8px 18px;
+  height: 40px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  flex-shrink: 0;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+.dash-accent-btn:hover {
+  background: var(--accent-dark);
+}
+
+/* ── Papers list ─────────────────────────────────────────── */
+.dash-papers-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.dash-paper-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  min-width: 0;
+  transition: border-color 0.2s ease;
+}
+.dash-paper-card:hover {
+  border-color: var(--accent-border);
+}
+.dash-paper-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+.dash-paper-top {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 1.25rem;
-  background: var(--color-surface);
-  border-radius: var(--radius);
-  border: 1px solid var(--color-border);
-  transition: transform 0.15s, box-shadow 0.15s;
+  gap: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  min-width: 0;
+  flex-wrap: wrap;
 }
-.stat-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
-}
-.stat-icon { font-size: 2rem; }
-.stat-card h3 {
-  font-size: 0.85rem;
-  color: var(--color-text-muted);
+.dash-paper-date {
+  font-size: 12px;
+  color: var(--text-muted);
   font-weight: 500;
+  background: var(--bg-surface);
+  padding: 3px 8px;
+  border-radius: 6px;
 }
-.stat-value {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: var(--color-text);
-}
-
-.papers-section h2 {
-  font-size: 1.25rem;
-  margin-bottom: 1rem;
-}
-.empty-state {
-  padding: 2rem;
-  text-align: center;
-  background: var(--color-surface);
-  border-radius: var(--radius);
-  border: 1px dashed var(--color-border);
-  color: var(--color-text-muted);
+.dash-paper-stats {
+  font-size: 13px;
+  color: var(--text-secondary);
 }

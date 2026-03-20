@@ -1,225 +1,195 @@
+/* ═══════════════════════════════════════════════════════════ */
+/* Upload / Analyze Page Styles                                */
+/* ═══════════════════════════════════════════════════════════ */
 .upload-page {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 3rem 1.5rem;
+  width: 100%;
+  max-width: 100%;
+  padding: 24px 28px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.upload-header {
-  text-align: center;
-  margin-bottom: 2.5rem;
-}
 .upload-header h1 {
-  font-size: 2rem;
+  font-size: 22px;
   font-weight: 700;
-  margin-bottom: 0.5rem;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--text-primary);
+  margin: 0 0 4px 0;
 }
 .upload-header p {
-  color: var(--color-text-muted);
-  font-size: 1.05rem;
+  color: var(--text-muted);
+  font-size: 13px;
+  margin: 0;
 }
 
-/* ── Drop zone ────────────────────────────────────────────── */
+/* ── Drop zone ───────────────────────────────────────────── */
 .drop-zone {
-  border: 2px dashed var(--color-border);
-  border-radius: var(--radius);
-  padding: 3rem 2rem;
+  border: 2px dashed var(--border-color);
+  border-radius: 10px;
+  padding: 36px 24px;
   text-align: center;
   cursor: pointer;
-  transition: border-color 0.2s, background 0.2s;
-  background: var(--color-surface);
+  transition: all 0.2s ease;
+  background: var(--bg-surface);
 }
 .drop-zone:hover,
 .drop-zone.active {
-  border-color: var(--color-primary);
-  background: rgba(99, 102, 241, 0.06);
+  border-color: var(--accent);
+  background: var(--accent-bg);
 }
 .drop-zone.has-file {
-  border-color: var(--color-success);
-}
-
-.drop-icon {
-  font-size: 2.5rem;
-  display: block;
-  margin-bottom: 0.75rem;
+  border-color: var(--accent);
 }
 .drop-prompt p {
-  color: var(--color-text-muted);
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin: 4px 0;
 }
-
 .file-info {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  font-size: 1.05rem;
+  gap: 8px;
+  font-size: 14px;
 }
-.file-icon { font-size: 1.5rem; }
-.file-name { font-weight: 600; }
-.file-size { color: var(--color-text-muted); }
+.file-name { font-weight: 600; color: var(--text-primary); }
+.file-size { color: var(--text-muted); }
 
-/* ── Button ───────────────────────────────────────────────── */
+/* ── Upload button ───────────────────────────────────────── */
 .upload-btn {
   display: block;
   width: 100%;
-  margin-top: 1.5rem;
-  padding: 0.85rem;
-  font-size: 1.05rem;
+  padding: 0 14px;
+  height: 44px;
+  font-size: 14px;
   font-weight: 600;
   border: none;
-  border-radius: var(--radius);
-  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  border-radius: 8px;
+  background: var(--accent);
   color: #fff;
   cursor: pointer;
-  transition: opacity 0.2s, transform 0.1s;
+  transition: background 0.2s ease;
+  box-sizing: border-box;
 }
 .upload-btn:hover:not(:disabled) {
-  opacity: 0.92;
-  transform: translateY(-1px);
+  background: var(--accent-dark);
 }
 .upload-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-/* ── Error ────────────────────────────────────────────────── */
-.error-msg {
-  margin-top: 1rem;
-  padding: 0.75rem 1rem;
-  background: rgba(239, 68, 68, 0.12);
-  border: 1px solid var(--color-danger);
-  border-radius: var(--radius);
-  color: var(--color-danger);
-  font-size: 0.95rem;
+/* ── Section card ────────────────────────────────────────── */
+.upload-section-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
 }
 
-/* ── Result card ──────────────────────────────────────────── */
+/* ── Result card ─────────────────────────────────────────── */
 .result-card {
-  margin-top: 2rem;
-  padding: 1.5rem;
-  background: var(--color-surface);
-  border-radius: var(--radius);
-  border: 1px solid var(--color-border);
+  padding: 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--accent-border);
+  border-left: 4px solid var(--accent);
+  border-radius: 10px;
 }
 .result-card h2 {
-  font-size: 1.25rem;
-  margin-bottom: 1rem;
-  color: var(--color-success);
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+  color: var(--accent);
 }
 .result-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  font-size: 0.9rem;
-  color: var(--color-text-muted);
+  gap: 16px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: var(--text-secondary);
 }
 .result-meta code {
-  color: var(--color-accent);
-  font-size: 0.85rem;
+  color: var(--accent);
+  font-size: 12px;
 }
-.result-preview {
-  margin-top: 1rem;
-}
+.result-preview { margin-top: 12px; }
 .result-preview h3 {
-  font-size: 1rem;
-  margin-bottom: 0.5rem;
-  color: var(--color-text-muted);
+  font-size: 13px;
+  margin-bottom: 8px;
+  color: var(--text-muted);
 }
 .result-preview pre {
-  background: var(--color-bg);
-  padding: 1rem;
+  background: var(--bg-surface);
+  padding: 14px;
   border-radius: 8px;
-  font-size: 0.85rem;
+  font-size: 13px;
   max-height: 300px;
   overflow: auto;
   white-space: pre-wrap;
   word-break: break-word;
-  color: var(--color-text);
+  color: var(--text-primary);
 }
 
-/* ── Go to Explain button ────────────────────────────────── */
-.go-explain-btn {
-  margin-top: 1.25rem;
-}
-
-/* ═══════════════════════════════════════════════════════════ */
-/* Paper Statistics Section                                    */
-/* ═══════════════════════════════════════════════════════════ */
-.stats-section {
-  margin-top: 2.5rem;
-}
-.stats-heading {
-  font-size: 1.4rem;
-  font-weight: 700;
-  margin-bottom: 1.25rem;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
+/* ── Stats grid ──────────────────────────────────────────── */
 .stats-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.25rem;
+  gap: 16px;
 }
-@media (max-width: 768px) {
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
+@media (max-width: 600px) {
+  .stats-grid { grid-template-columns: 1fr; }
 }
 
-/* ── Individual chart card ───────────────────────────────── */
+/* ── Chart card ──────────────────────────────────────────── */
 .stat-chart-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 12px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
   padding: 20px;
   min-height: 200px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  transition: border-color 0.2s ease;
 }
+.stat-chart-card:hover { border-color: var(--accent-border); }
 .chart-title {
-  font-size: 1rem;
-  font-weight: 700;
-  margin-bottom: 0.75rem;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
   text-align: center;
   width: 100%;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--accent);
 }
 .chart-svg {
   width: 100%;
   max-width: 320px;
 }
 
-/* ── Donut chart specifics ───────────────────────────────── */
-.donut-container {
-  display: flex;
-  justify-content: center;
-}
-.donut-svg {
-  width: 150px;
-  height: 150px;
-}
+/* ── Donut chart ─────────────────────────────────────────── */
+.donut-container { display: flex; justify-content: center; }
+.donut-svg { width: 140px; height: 140px; }
 .donut-legend {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem 0.75rem;
+  gap: 6px 10px;
   justify-content: center;
-  margin-top: 0.75rem;
-  font-size: 0.75rem;
-  color: var(--color-text-muted);
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--text-muted);
 }
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
+.legend-item { display: flex; align-items: center; gap: 4px; }
 .legend-dot {
   width: 8px;
   height: 8px;
@@ -230,8 +200,7 @@
 /* ── Gauge label ─────────────────────────────────────────── */
 .gauge-label {
   text-align: center;
-  font-size: 0.85rem;
+  font-size: 13px;
   font-weight: 600;
-  margin-top: 0.25rem;
+  margin-top: 6px;
 }
-
