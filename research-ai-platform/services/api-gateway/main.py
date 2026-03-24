@@ -167,6 +167,47 @@ async def auth_login(request: Request):
         return response.json()
 
 
+@app.post("/auth/google")
+async def auth_google(request: Request):
+    body = await request.json()
+    async with httpx.AsyncClient(timeout=30) as client:
+        response = await client.post(
+            f"{AUTH_SERVICE}/auth/google", json=body
+        )
+        return response.json()
+
+
+@app.post("/auth/send-otp")
+async def send_otp(request: Request):
+    body = await request.json()
+    async with httpx.AsyncClient(timeout=30) as client:
+        response = await client.post(
+            f"{AUTH_SERVICE}/auth/send-otp", json=body
+        )
+        return response.json()
+
+
+@app.post("/auth/verify-otp")
+async def verify_otp(request: Request):
+    body = await request.json()
+    async with httpx.AsyncClient(timeout=30) as client:
+        response = await client.post(
+            f"{AUTH_SERVICE}/auth/verify-otp", json=body
+        )
+        return response.json()
+
+
+@app.post("/auth/verify-otp-only")
+async def verify_otp_only(request: Request):
+    body = await request.json()
+    async with httpx.AsyncClient(timeout=30) as client:
+        response = await client.post(
+            f"{AUTH_SERVICE}/auth/verify-otp-only",
+            json=body
+        )
+        return response.json()
+
+
 @app.get("/auth/me")
 async def auth_me(request: Request):
     auth_header = request.headers.get("Authorization", "")

@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useAuth } from '../contexts/AuthContext';
 import { usePaper } from '../contexts/PaperContext';
 import { uploadPaper } from '../api/client';
 import PageLoader from '../components/PageLoader';
@@ -273,6 +274,8 @@ export default function UploadPage() {
   const [summaryError, setSummaryError] = useState(null);
 
   const { setPaper } = usePaper();
+  const { user } = useAuth();
+  const userId = user?.id || 'guest';
   const navigate = useNavigate();
 
   const handleDrag = useCallback((e) => {
@@ -301,11 +304,11 @@ export default function UploadPage() {
       const data = response.data;
       setResult(data);
       setPaper({ paperId: data.paper_id, filename: data.filename, totalWords: data.total_words, totalChunks: data.total_chunks });
-      const pCount = parseInt(localStorage.getItem('paperpilot_papers_count') || '0');
-      localStorage.setItem('paperpilot_papers_count', String(pCount + 1));
-      const recent = JSON.parse(localStorage.getItem('paperpilot_recent_papers') || '[]');
+      const pCount = parseInt(localStorage.getItem(`paperpilot_papers_count_${userId}`) || '0');
+      localStorage.setItem(`paperpilot_papers_count_${userId}`, String(pCount + 1));
+      const recent = JSON.parse(localStorage.getItem(`paperpilot_recent_papers_${userId}`) || '[]');
       recent.unshift({ paper_id: data.paper_id, filename: data.filename, total_words: data.total_words, total_chunks: data.total_chunks, uploaded_at: new Date().toISOString() });
-      localStorage.setItem('paperpilot_recent_papers', JSON.stringify(recent.slice(0, 3)));
+      localStorage.setItem(`paperpilot_recent_papers_${userId}`, JSON.stringify(recent.slice(0, 3)));
     } catch (err) {
       setError(err.response?.data?.detail || 'Upload failed. Is the Paper Service running?');
     } finally {
@@ -320,8 +323,8 @@ export default function UploadPage() {
     try {
       const response = await axios.post('http://localhost:8000/summarize', { paper_id: result.paper_id });
       setSummary(response.data?.summary || 'No summary returned.');
-      const sCount = parseInt(localStorage.getItem('paperpilot_summaries_count') || '0');
-      localStorage.setItem('paperpilot_summaries_count', String(sCount + 1));
+      const sCount = parseInt(localStorage.getItem(`paperpilot_summaries_count_${userId}`) || '0');
+      localStorage.setItem(`paperpilot_summaries_count_${userId}`, String(sCount + 1));
     } catch (err) {
       setSummaryError(err.response?.data?.detail || 'Failed to generate summary.');
       setSummary('');
@@ -337,8 +340,8 @@ export default function UploadPage() {
     try {
       const response = await axios.post('http://localhost:8000/explain', { paper_id: result.paper_id, level: selectedLevel });
       setExplanation(response.data?.explanation || 'No explanation returned.');
-      const eCount = parseInt(localStorage.getItem('paperpilot_explanations_count') || '0');
-      localStorage.setItem('paperpilot_explanations_count', String(eCount + 1));
+      const eCount = parseInt(localStorage.getItem(`paperpilot_explanations_count_${userId}`) || '0');
+      localStorage.setItem(`paperpilot_explanations_count_${userId}`, String(eCount + 1));
     } catch (err) {
       setExplainError(err.response?.data?.detail || 'Failed to generate explanation.');
       setExplanation('');

@@ -2,9 +2,13 @@
 html,
 body {
   height: 100%;
-  overflow: hidden;
   margin: 0;
   padding: 0;
+}
+
+/* Lock scroll only when inside the app shell (authenticated layout) */
+body:has(.app-shell) {
+  overflow: hidden;
 }
 
 /* ── App Shell Layout ─────────────────────────────────────────── */

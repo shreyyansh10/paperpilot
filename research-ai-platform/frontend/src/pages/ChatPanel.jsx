@@ -2,11 +2,14 @@ import { useState, useRef, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import PaperContext from '../contexts/PaperContext';
+import { useAuth } from '../contexts/AuthContext';
 import PageLoader from '../components/PageLoader';
 import './ChatPanel.css';
 
 export default function ChatPanel() {
   const { paperId, filename } = useContext(PaperContext);
+  const { user } = useAuth();
+  const userId = user?.id || 'guest';
   const navigate = useNavigate();
 
   const [messages, setMessages] = useState([]);
@@ -29,8 +32,8 @@ export default function ChatPanel() {
     try {
       const response = await axios.post('http://localhost:8000/chat', { paper_id: paperId, question });
       setMessages((prev) => [...prev, { role: 'assistant', text: response.data.answer }]);
-      const cCount = parseInt(localStorage.getItem('paperpilot_chats_count') || '0');
-      localStorage.setItem('paperpilot_chats_count', String(cCount + 1));
+      const cCount = parseInt(localStorage.getItem(`paperpilot_chats_count_${userId}`) || '0');
+      localStorage.setItem(`paperpilot_chats_count_${userId}`, String(cCount + 1));
     } catch (err) {
       setMessages((prev) => [...prev, {
         role: 'assistant',
@@ -77,7 +80,13 @@ export default function ChatPanel() {
             <p>{msg.text}</p>
           </div>
         ))}
-        {loading && <PageLoader text="AI is thinking..." />}
+        {loading && (
+          <div className="typing-dots">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        )}
         <div ref={endRef} />
       </div>
 

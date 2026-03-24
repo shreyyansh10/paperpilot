@@ -184,3 +184,78 @@ input:focus, textarea:focus {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-20px); }
 }
+
+/* ── UI Redesign — Keyframe Animations ─────────────────────── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulseBorder {
+  0%, 100% { border-color: rgba(16, 185, 129, 0.3); }
+  50%      { border-color: rgba(16, 185, 129, 1); }
+}
+
+@keyframes bounceDot {
+  0%, 100% { transform: translateY(0); opacity: 0.4; }
+  50%      { transform: translateY(-8px); opacity: 1; }
+}
+
+/* ── Scroll-triggered animation classes ────────────────────── */
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.animate-on-scroll.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Stagger delay helpers ─────────────────────────────────── */
+.delay-1 { transition-delay: 0.1s; }
+.delay-2 { transition-delay: 0.2s; }
+.delay-3 { transition-delay: 0.3s; }
+.delay-4 { transition-delay: 0.4s; }
+
+/* ── Page-load fade-in animation class ─────────────────────── */
+.fade-in-up {
+  animation: fadeInUp 0.5s ease both;
+}
+
+/* ── 3D Landing Page Animations ────────────────────────────── */
+@keyframes float3d {
+  0%   { transform: translateY(0px) rotateX(0deg) rotateZ(0deg); }
+  25%  { transform: translateY(-15px) rotateX(5deg) rotateZ(2deg); }
+  50%  { transform: translateY(-8px) rotateX(-3deg) rotateZ(-1deg); }
+  75%  { transform: translateY(-20px) rotateX(4deg) rotateZ(1deg); }
+  100% { transform: translateY(0px) rotateX(0deg) rotateZ(0deg); }
+}
+
+@keyframes gradientRotate {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes particleFloat {
+  0%, 100% { transform: translateY(0) translateX(0); opacity: 0.3; }
+  33%      { transform: translateY(-30px) translateX(15px); opacity: 0.7; }
+  66%      { transform: translateY(-15px) translateX(-10px); opacity: 0.5; }
+}
+
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 10px rgba(16, 185, 129, 0.4); }
+  50%      { box-shadow: 0 0 25px rgba(16, 185, 129, 0.8),
+                         0 0 50px rgba(16, 185, 129, 0.3); }
+}

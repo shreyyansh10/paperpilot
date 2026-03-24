@@ -29,7 +29,7 @@ const Sidebar = ({ navItems, onCollapsedChange }) => {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate('/');
   };
 
   const sidebarStyle = {
@@ -202,19 +202,34 @@ const Sidebar = ({ navItems, onCollapsedChange }) => {
           padding: '6px 4px',
           overflow: 'hidden',
         }}>
-          <div style={{
-            width: '32px',
-            height: '32px',
-            borderRadius: '50%',
-            background: 'var(--accent)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontWeight: 700,
-            color: '#fff',
-            fontSize: '13px',
-            flexShrink: 0,
-          }}>{avatarLetter}</div>
+          {user?.avatar ? (
+            <img
+              src={user.avatar}
+              alt={userName}
+              style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '50%',
+                objectFit: 'cover',
+                flexShrink: 0,
+              }}
+              referrerPolicy="no-referrer"
+            />
+          ) : (
+            <div style={{
+              width: '36px',
+              height: '36px',
+              borderRadius: '50%',
+              background: 'var(--accent)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontWeight: 700,
+              color: '#fff',
+              fontSize: '14px',
+              flexShrink: 0,
+            }}>{avatarLetter}</div>
+          )}
           <div style={{
             opacity: collapsed ? 0 : 1,
             width: collapsed ? 0 : 'auto',

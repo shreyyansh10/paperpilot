@@ -1,9 +1,7 @@
 require('dotenv').config();
-const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-
-const prisma = new PrismaClient();
+const prisma = require('../utils/prisma');
 
 const generateToken = (userId, email) => {
   return jwt.sign(
@@ -103,6 +101,7 @@ const getMe = async (req, res) => {
         id: user.id,
         name: user.name,
         email: user.email,
+        avatar: user.avatar || null,
         createdAt: user.createdAt
       }
     });

@@ -8,10 +8,22 @@ datasource db {
 }
 
 model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  password     String?
+  googleId     String?  @unique
+  avatar       String?
+  authProvider String   @default("local")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model OTP {
   id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  password  String
+  email     String
+  otp       String
+  expiresAt DateTime
+  used      Boolean  @default(false)
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }

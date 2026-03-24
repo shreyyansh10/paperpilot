@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import axios from 'axios';
 
 const LoginPage = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const btnRef = useRef(null);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -12,10 +14,60 @@ const LoginPage = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
+  /* ── Google Sign-In ─────────────────────────────── */
+  const handleGoogleResponse = useCallback(async (response) => {
+    try {
+      setLoading(true);
+      setError('');
+      const res = await axios.post('http://localhost:8000/auth/google', {
+        idToken: response.credential,
+      });
+      if (res.data.success) {
+        login(res.data.user, res.data.token);
+        navigate('/dashboard');
+      }
+    } catch (err) {
+      setError(err.response?.data?.error || 'Google sign in failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  }, [login, navigate]);
 
+  useEffect(() => {
+    const initGoogle = () => {
+      if (window.google && btnRef.current) {
+        window.google.accounts.id.initialize({
+          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+          callback: handleGoogleResponse,
+          auto_select: false,
+          cancel_on_tap_outside: true,
+        });
+        window.google.accounts.id.renderButton(btnRef.current, {
+          theme: 'outline',
+          size: 'large',
+          width: 300,
+          text: 'signin_with',
+          shape: 'rectangular',
+        });
+      }
+    };
+
+    if (window.google) {
+      initGoogle();
+    } else {
+      const interval = setInterval(() => {
+        if (window.google) {
+          clearInterval(interval);
+          initGoogle();
+        }
+      }, 100);
+      return () => clearInterval(interval);
+    }
+  }, [handleGoogleResponse]);
+
+  /* ── Email + Password Login ─────────────────────── */
+  const handleEmailLogin = async (e) => {
+    e.preventDefault();
     if (!email || !password) {
       setError('Email and password are required');
       return;
@@ -23,25 +75,40 @@ const LoginPage = () => {
 
     try {
       setLoading(true);
-      const res = await fetch('http://localhost:8000/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-      const data = await res.json();
-
-      if (!res.ok || !data.success) {
-        setError(data.error || 'Login failed');
-        return;
+      setError('');
+      const res = await axios.post('http://localhost:8000/auth/login', { email, password });
+      if (res.data.success) {
+        login(res.data.user, res.data.token);
+        navigate('/dashboard');
       }
-
-      login(data.user, data.token);
-      navigate('/dashboard');
-    } catch {
-      setError('Unable to connect to server');
+    } catch (err) {
+      setError(err.response?.data?.error || 'Login failed. Please try again.');
     } finally {
       setLoading(false);
     }
+  };
+
+  /* ── Shared Styles ──────────────────────────────── */
+  const inputStyle = {
+    width: '100%',
+    padding: '12px 14px',
+    background: 'var(--bg-primary)',
+    border: '1px solid var(--border-color)',
+    borderRadius: '10px',
+    color: 'var(--text-primary)',
+    fontSize: '14px',
+    outline: 'none',
+    boxSizing: 'border-box',
+    transition: 'border-color 0.2s',
+  };
+
+  const labelStyle = {
+    display: 'block',
+    fontSize: '13px',
+    fontWeight: 600,
+    color: 'var(--text-secondary)',
+    marginBottom: '6px',
+    textAlign: 'left',
   };
 
   return (
@@ -52,7 +119,7 @@ const LoginPage = () => {
       justifyContent: 'center',
       background: 'var(--bg-primary)',
       position: 'relative',
-      overflow: 'hidden'
+      overflow: 'hidden',
     }}>
       {/* Glow */}
       <div style={{
@@ -76,7 +143,8 @@ const LoginPage = () => {
         padding: '40px',
         position: 'relative',
         zIndex: 2,
-        boxSizing: 'border-box'
+        boxSizing: 'border-box',
+        textAlign: 'center',
       }}>
         <div style={{
           fontSize: '22px',
@@ -84,61 +152,92 @@ const LoginPage = () => {
           marginBottom: '8px',
           color: 'var(--accent)',
         }}>PaperPilot</div>
-        <p style={{ color: 'var(--text-muted)', marginTop: 0, marginBottom: '28px' }}>Welcome back</p>
+        <p style={{ color: 'var(--text-muted)', marginTop: 0, marginBottom: '28px' }}>
+          Welcome back
+        </p>
 
-        <form onSubmit={handleSubmit}>
+        {error && (
+          <div style={{
+            background: 'var(--danger-bg)',
+            border: '1px solid var(--danger-border)',
+            color: 'var(--danger)',
+            padding: '10px 12px',
+            borderRadius: '10px',
+            marginBottom: '16px',
+            fontSize: '14px',
+          }}>
+            {error}
+          </div>
+        )}
+
+        {/* Google Button */}
+        <div
+          ref={btnRef}
+          id="google-signin-btn"
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            marginBottom: '20px',
+            minHeight: '44px',
+          }}
+        />
+
+        {/* Divider */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          margin: '20px 0',
+        }}>
+          <div style={{ flex: 1, height: '1px', background: 'var(--border-color)' }} />
+          <span style={{ color: 'var(--text-muted)', fontSize: '13px', fontWeight: 500 }}>or</span>
+          <div style={{ flex: 1, height: '1px', background: 'var(--border-color)' }} />
+        </div>
+
+        {/* Email + Password Form */}
+        <form onSubmit={handleEmailLogin} style={{ textAlign: 'left' }}>
           <div style={{ marginBottom: '16px' }}>
-            <label style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '8px', display: 'block' }}>Email</label>
+            <label style={labelStyle}>Email</label>
             <input
+              id="login-email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              style={{
-                width: '100%',
-                background: 'var(--bg-surface)',
-                border: '1px solid var(--border-color)',
-                borderRadius: '10px',
-                color: 'var(--text-primary)',
-                padding: '12px 14px',
-                fontSize: '14px',
-                boxSizing: 'border-box',
-                outline: 'none',
-              }}
+              placeholder="you@example.com"
+              style={inputStyle}
+              onFocus={(e) => e.target.style.borderColor = 'var(--accent)'}
+              onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
             />
           </div>
 
-          <div style={{ marginBottom: '16px' }}>
-            <label style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '8px', display: 'block' }}>Password</label>
+          <div style={{ marginBottom: '24px' }}>
+            <label style={labelStyle}>Password</label>
             <div style={{ position: 'relative' }}>
               <input
+                id="login-password"
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                style={{
-                  width: '100%',
-                  background: 'var(--bg-surface)',
-                  border: '1px solid var(--border-color)',
-                  borderRadius: '10px',
-                  color: 'var(--text-primary)',
-                  padding: '12px 44px 12px 14px',
-                  fontSize: '14px',
-                  boxSizing: 'border-box',
-                  outline: 'none',
-                }}
+                placeholder="Enter your password"
+                style={{ ...inputStyle, paddingRight: '60px' }}
+                onFocus={(e) => e.target.style.borderColor = 'var(--accent)'}
+                onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
               />
               <button
                 type="button"
-                onClick={() => setShowPassword((prev) => !prev)}
+                onClick={() => setShowPassword(!showPassword)}
                 style={{
                   position: 'absolute',
-                  right: '8px',
+                  right: '12px',
                   top: '50%',
                   transform: 'translateY(-50%)',
+                  background: 'none',
                   border: 'none',
-                  background: 'transparent',
                   color: 'var(--text-muted)',
                   cursor: 'pointer',
-                  fontSize: '16px'
+                  fontSize: '13px',
+                  fontWeight: 500,
+                  padding: 0,
                 }}
               >
                 {showPassword ? 'Hide' : 'Show'}
@@ -146,49 +245,37 @@ const LoginPage = () => {
             </div>
           </div>
 
-          {error && (
-            <div style={{
-              background: 'var(--danger-bg)',
-              border: '1px solid var(--danger-border)',
-              color: 'var(--danger)',
-              padding: '10px 12px',
-              borderRadius: '10px',
-              marginBottom: '16px',
-              fontSize: '14px'
-            }}>
-              {error}
-            </div>
-          )}
-
           <button
+            id="login-submit"
             type="submit"
             disabled={loading}
             style={{
               width: '100%',
+              padding: '12px',
+              background: loading ? 'var(--border-color)' : 'var(--accent)',
+              color: '#fff',
               border: 'none',
               borderRadius: '10px',
-              padding: '12px 14px',
-              color: '#fff',
               fontWeight: 700,
               fontSize: '15px',
               cursor: loading ? 'not-allowed' : 'pointer',
-              opacity: loading ? 0.75 : 1,
-              background: 'var(--accent)',
-              transition: 'all 0.2s ease',
+              transition: 'all 0.2s',
+              opacity: loading ? 0.7 : 1,
             }}
           >
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
 
+        {/* Divider */}
         <div style={{
           margin: '24px 0 14px',
           height: '1px',
-          background: `linear-gradient(to right, transparent, var(--border-color), transparent)`
+          background: 'linear-gradient(to right, transparent, var(--border-color), transparent)',
         }} />
 
         <p style={{ color: 'var(--text-muted)', fontSize: '14px', textAlign: 'center', margin: 0 }}>
-          Don't have an account?{' '}
+          Don&apos;t have an account?{' '}
           <Link to="/signup" style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: 600 }}>
             Sign up
           </Link>

@@ -1,7 +1,11 @@
 .env
 **/.env
 .venv/
+node_modules/
 **/node_modules/
+services/auth-service/node_modules/
+frontend/node_modules/
+**/.prisma/
 __pycache__/
 **/__pycache__/
 *.pyc
@@ -10,6 +14,9 @@ __pycache__/
 storage/pdfs/*.pdf
 services/storage/pdfs/*.pdf
 *.pdf
+dist/
+build/
+.DS_Store
 .vscode/settings.json
 services/ai-service/test_gemini.py
 services/ai-service/test_grok.py

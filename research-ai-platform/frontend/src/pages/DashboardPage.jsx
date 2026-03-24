@@ -35,6 +35,7 @@ function getGreeting() {
 export default function DashboardPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const userId = user?.id || 'guest';
   const userName = user?.name || 'Researcher';
 
   const [stats, setStats] = useState({ papers: 0, summaries: 0, explanations: 0, chats: 0 });
@@ -42,14 +43,14 @@ export default function DashboardPage() {
 
   useEffect(() => {
     setStats({
-      papers: parseInt(localStorage.getItem('paperpilot_papers_count') || '0'),
-      summaries: parseInt(localStorage.getItem('paperpilot_summaries_count') || '0'),
-      explanations: parseInt(localStorage.getItem('paperpilot_explanations_count') || '0'),
-      chats: parseInt(localStorage.getItem('paperpilot_chats_count') || '0'),
+      papers: parseInt(localStorage.getItem(`paperpilot_papers_count_${userId}`) || '0'),
+      summaries: parseInt(localStorage.getItem(`paperpilot_summaries_count_${userId}`) || '0'),
+      explanations: parseInt(localStorage.getItem(`paperpilot_explanations_count_${userId}`) || '0'),
+      chats: parseInt(localStorage.getItem(`paperpilot_chats_count_${userId}`) || '0'),
     });
-    const recent = JSON.parse(localStorage.getItem('paperpilot_recent_papers') || '[]');
+    const recent = JSON.parse(localStorage.getItem(`paperpilot_recent_papers_${userId}`) || '[]');
     setRecentPapers(recent);
-  }, []);
+  }, [userId]);
 
   const papersCount = useCountUp(stats.papers);
   const summariesCount = useCountUp(stats.summaries);
@@ -74,7 +75,11 @@ export default function DashboardPage() {
       {/* Stats */}
       <div className="dash-stats-grid">
         {statCards.map((s, i) => (
-          <div key={i} className="dash-stat-card">
+          <div
+            key={i}
+            className="dash-stat-card"
+            style={{ animation: `fadeInUp 0.5s ease ${i * 0.1}s both` }}
+          >
             <div className="dash-stat-number">{s.count}</div>
             <div className="dash-stat-label">{s.label}</div>
           </div>
@@ -95,7 +100,11 @@ export default function DashboardPage() {
         ) : (
           <div className="dash-papers-grid">
             {recentPapers.slice(0, 3).map((paper, i) => (
-              <div key={i} className="dash-paper-card">
+              <div
+                key={i}
+                className="dash-paper-card"
+                style={{ animation: `slideInLeft 0.4s ease ${i * 0.1}s both` }}
+              >
                 <div className="dash-paper-info">
                   <div className="dash-paper-top">
                     <span>{paper.filename}</span>
